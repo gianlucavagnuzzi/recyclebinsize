@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<zabbix_export>
+  <version>7.4</version>
+
+  <template_groups>
+    <template_group>
+      <uuid>e4f7f3b012344a1b9cde5f6a7b8c9d0e</uuid>
+      <name>Templates/Applications</name>
+    </template_group>
+  </template_groups>
+
+  <templates>
+    <template>
+      <uuid>e4f7f3b022344a1b9cde5f6a7b8c9d0f</uuid>
+      <template>Recycle Bin Size by Zabbix Agent</template>
+      <name>Recycle Bin Size by Zabbix Agent</name>
+      <groups>
+        <group>
+          <name>Templates/Applications</name>
+        </group>
+      </groups>
+
+      <macros>
+        <macro>
+          <macro>{$RECYCLEBIN_THRESHOLD}</macro>
+          <value>1073741824</value>
+        </macro>
+      </macros>
+
+      <discovery_rules>
+        <discovery_rule>
+          <uuid>e4f7f3b032344a1b9cde5f6a7b8c9d10</uuid>
+          <name>User Trash Discovery</name>
+          <key>recyclebin.size.lld</key>
+          <delay>3600s</delay>
+
+          <item_prototypes>
+            <item_prototype>
+              <uuid>e4f7f3b042344a1b9cde5f6a7b8c9d11</uuid>
+              <name>Recycle Bin Size [{#USERNAME}]</name>
+              <key>recyclebin.size.user[{#USERNAME}]</key>
+              <value_type>FLOAT</value_type>
+              <units>B</units>
+              <delay>3600s</delay>
+            </item_prototype>
+          </item_prototypes>
+
+          <trigger_prototypes>
+            <trigger_prototype>
+              <uuid>e4f7f3b052344a1b9cde5f6a7b8c9d12</uuid>
+              <name>Recycle Bin Size [{#USERNAME}] is too big</name>
+              <opdata>Current state: {ITEM.LASTVALUE1}</opdata>
+              <expression>last(/Recycle Bin Size by Zabbix Agent/recyclebin.size.user[{#USERNAME}]) &gt; {$RECYCLEBIN_THRESHOLD}</expression>
+              <priority>HIGH</priority>
+              <description>Recycle Bin exceeds {$RECYCLEBIN_THRESHOLD} B for user {#USERNAME}</description>
+            </trigger_prototype>
+          </trigger_prototypes>
+
+        </discovery_rule>
+      </discovery_rules>
+
+    </template>
+  </templates>
+</zabbix_export>
